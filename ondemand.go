@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/acouvreur/traefik-ondemand-plugin/pkg/service"
 	"github.com/acouvreur/traefik-ondemand-plugin/pkg/strategy"
 )
 
@@ -37,13 +38,17 @@ type Ondemand struct {
 	strategy strategy.Strategy
 }
 
-func buildRequest(url string, name string, timeout time.Duration) (string, error) {
+func buildServiceInfo(url string, name string, timeout time.Duration) (service.Service, error) {
 	request := fmt.Sprintf("%s?name=%s&timeout=%s", url, name, timeout.String())
-	return request, nil
+	return service.Service{
+		Name:    name,
+		Started: false,
+		Request: request,
+	}, nil
 }
 
 // New function creates the configuration
-func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
+func New(ctx context.Context, next http.Handler, config *Config, middlewareName string) (http.Handler, error) {
 	if len(config.ServiceUrl) == 0 {
 		return nil, fmt.Errorf("serviceurl cannot be null")
 	}
@@ -66,18 +71,16 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	if err != nil {
 		return nil, err
 	}
-	var requests []string
+	var services []service.Service
 
 	for _, serviceName := range serviceNames {
-		request, err := buildRequest(config.ServiceUrl, serviceName, timeout)
-
+		service, err := buildServiceInfo(config.ServiceUrl, serviceName, timeout)
 		if err != nil {
 			return nil, fmt.Errorf("error while building request for %s", serviceName)
 		}
-		requests = append(requests, request)
+		services = append(services, service)
 	}
-
-	strategy, err := config.getServeStrategy(requests, name, next, timeout)
+	strategy, err := config.getServeStrategy(services, middlewareName, next, timeout)
 
 	if err != nil {
 		return nil, err
@@ -88,10 +91,10 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	}, nil
 }
 
-func (config *Config) getServeStrategy(requests []string, name string, next http.Handler, timeout time.Duration) (strategy.Strategy, error) {
+func (config *Config) getServeStrategy(services []service.Service, name string, next http.Handler, timeout time.Duration) (strategy.Strategy, error) {
 	if config.WaitUi {
 		return &strategy.DynamicStrategy{
-			Requests:    requests,
+			Services:    services,
 			Name:        name,
 			Next:        next,
 			Timeout:     timeout,
@@ -107,7 +110,7 @@ func (config *Config) getServeStrategy(requests []string, name string, next http
 		}
 
 		return &strategy.BlockingStrategy{
-			Requests:           requests,
+			Services:           services,
 			Name:               name,
 			Next:               next,
 			Timeout:            timeout,

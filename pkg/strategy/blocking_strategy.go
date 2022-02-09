@@ -9,7 +9,7 @@ import (
 )
 
 type BlockingStrategy struct {
-	Requests           []string
+	Services           []Service
 	Name               string
 	Next               http.Handler
 	Timeout            time.Duration

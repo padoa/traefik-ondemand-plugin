@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/acouvreur/traefik-ondemand-plugin/pkg/pages"
+	"github.com/acouvreur/traefik-ondemand-plugin/pkg/service"
 )
 
 type DynamicStrategy struct {
-	Requests    []string
+	Services    []service.Service
 	Name        string
 	Next        http.Handler
 	Timeout     time.Duration
@@ -19,11 +20,11 @@ type DynamicStrategy struct {
 
 // ServeHTTP retrieve the service status
 func (e *DynamicStrategy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	started := make([]bool, len(e.Requests))
-	notReadyCount := 0
-	for requestIndex, request := range e.Requests {
-		log.Printf("Sending request: %s", request)
-		status, err := getServiceStatus(request)
+	var allServicesReady bool
+	for _, service := range e.Services {
+		allServicesReady = true
+		log.Printf("Sending request: %s", service.Request)
+		status, err := getServiceStatus(service.Request)
 		log.Printf("Status: %s", status)
 
 		if err != nil {
@@ -32,22 +33,22 @@ func (e *DynamicStrategy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		if status == "started" {
-			started[requestIndex] = true
+			service.Started = true
 		} else if status == "starting" {
-			started[requestIndex] = false
-			notReadyCount++
+			service.Started = false
+			allServicesReady = false
 		} else {
 			// Error
 			rw.WriteHeader(http.StatusInternalServerError)
 			rw.Write([]byte(pages.GetErrorPage(e.ErrorPage, e.Name, status)))
 		}
 	}
-	if notReadyCount == 0 {
+	if allServicesReady {
 		// All services are ready, forward request
 		e.Next.ServeHTTP(rw, req)
 	} else {
 		// Services still starting, notify client
 		rw.WriteHeader(http.StatusAccepted)
-		rw.Write([]byte(pages.GetLoadingPage(e.LoadingPage, e.Name, e.Timeout)))
+		rw.Write([]byte(pages.GetLoadingPage(e.LoadingPage, e.Name, e.Services, e.Timeout)))
 	}
 }
