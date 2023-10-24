@@ -278,21 +278,21 @@ var loadingPage = `<!doctype html>
       <div class="container">
         <div class="cluster">
           <div>
-            <span class="subtitle">Stack name</span>
+            <span class="subtitle">Nom de votre stack</span>
             <div class="title">{{ .Name }}</div>
           </div>
           <div>
-            <span class="subtitle">Loading...</span>
+            <span class="subtitle">Réveil en cours...</span>
             <div class="title small">
-              Your instance is loading,<br>
-              and will be ready shortly.
+              Votre stack est en train de se réveiller, veuillez patienter quelques minutes...<br>
+              En cas d'attente de plus de 15 minutes, contactez l'équipe SRE (#team_sre).
             </div>
           </div>
           <div>
-            <span class="subtitle">Automatic shutdown</span>
+            <span class="subtitle">Arrêt automatique</span>
             <div class="title small">
-              Your instance will shutdown automatically<br>
-              after {{ .Timeout }} of inactivity.
+              Votre stack sera automatiquement arrêtée<br>
+              après {{ .Timeout }} d'inactivité'.
             </div>
           </div>
         </div>

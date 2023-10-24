@@ -215,13 +215,14 @@ var errorPage = `<!doctype html>
 <body class="u-flex-center">
   <div class="cluster">
     <div>
-      <span class="subtitle">Stack name</span>
+      <span class="subtitle">Nom de votre stack</span>
       <div class="title">{{ .Name }}</div>
     </div>
     <div>
-      <span class="subtitle">Error</span>
+      <span class="subtitle">Erreur :(</span>
       <div class="title small">
-        There was an error loading your instance.
+        Une erreur a eu lieu pendant le réveil de votre stack.<br/>
+		Contactez l'équipe SRE (#team_sre).
       </div>
     </div>
     <div class="title code">
