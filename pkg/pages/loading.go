@@ -291,8 +291,7 @@ var loadingPage = `<!doctype html>
           <div>
             <span class="subtitle">Arrêt automatique</span>
             <div class="title small">
-              Votre stack sera automatiquement arrêtée<br>
-              après {{ .Timeout }} d'inactivité'.
+              Votre stack sera automatiquement arrêtée après {{ .Timeout }} d'inactivité.
             </div>
           </div>
         </div>

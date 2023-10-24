@@ -222,7 +222,7 @@ var errorPage = `<!doctype html>
       <span class="subtitle">Erreur :(</span>
       <div class="title small">
         Une erreur a eu lieu pendant le réveil de votre stack.<br/>
-		Contactez l'équipe SRE (#team_sre).
+        Contactez l'équipe SRE (#team_sre).
       </div>
     </div>
     <div class="title code">
