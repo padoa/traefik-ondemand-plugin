@@ -345,12 +345,12 @@ func GetLoadingPage(template_path string, name string, timeout time.Duration) st
 // golang's default ``time.Duration`` output is badly formatted and unreadable.
 func humanizeDuration(duration time.Duration) string {
 	if duration.Seconds() < 60.0 {
-		return fmt.Sprintf("%d seconds", int64(duration.Seconds()))
+		return fmt.Sprintf("%d secondes", int64(duration.Seconds()))
 	}
 	if duration.Minutes() < 60.0 {
 		remainingSeconds := math.Mod(duration.Seconds(), 60)
 		if remainingSeconds > 0 {
-			return fmt.Sprintf("%d minutes %d seconds", int64(duration.Minutes()), int64(remainingSeconds))
+			return fmt.Sprintf("%d minutes %d secondes", int64(duration.Minutes()), int64(remainingSeconds))
 		}
 		return fmt.Sprintf("%d minutes", int64(duration.Minutes()))
 	}
@@ -360,16 +360,16 @@ func humanizeDuration(duration time.Duration) string {
 
 		if remainingMinutes > 0 {
 			if remainingSeconds > 0 {
-				return fmt.Sprintf("%d hours %d minutes %d seconds", int64(duration.Hours()), int64(remainingMinutes), int64(remainingSeconds))
+				return fmt.Sprintf("%d heures %d minutes %d secondes", int64(duration.Hours()), int64(remainingMinutes), int64(remainingSeconds))
 			}
-			return fmt.Sprintf("%d hours %d minutes", int64(duration.Hours()), int64(remainingMinutes))
+			return fmt.Sprintf("%d heures %d minutes", int64(duration.Hours()), int64(remainingMinutes))
 		}
-		return fmt.Sprintf("%d hours", int64(duration.Hours()))
+		return fmt.Sprintf("%d heures", int64(duration.Hours()))
 	}
 	remainingHours := math.Mod(duration.Hours(), 24)
 	remainingMinutes := math.Mod(duration.Minutes(), 60)
 	remainingSeconds := math.Mod(duration.Seconds(), 60)
-	return fmt.Sprintf("%d days %d hours %d minutes %d seconds",
+	return fmt.Sprintf("%d jours %d heures %d minutes %d secondes",
 		int64(duration.Hours()/24), int64(remainingHours),
 		int64(remainingMinutes), int64(remainingSeconds))
 }
